@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "Role".
@@ -12,7 +13,7 @@ use Yii;
  *
  * @property Users[] $users
  */
-class Role extends \yii\db\ActiveRecord
+class Role extends ActiveRecord
 {
 
 
@@ -53,7 +54,11 @@ class Role extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(Users::class, ['role_id' => 'id']);
+        return $this->hasMany(User::class, ['role_id' => 'id']);
+    }
+
+    public static function getRoleName($id) {
+        return Role::findOne($id)->role;
     }
 
 }

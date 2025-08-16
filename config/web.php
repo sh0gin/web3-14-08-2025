@@ -32,6 +32,16 @@ $config = [
                         'message' => 'not found',
                     ];
                 }
+                if ($response->statusCode == 403) {
+                    $response->data = [
+                        'message' => 'forbbiden for you',
+                    ];
+                }
+                if ($response->statusCode == 401) {
+                    $response->data = [
+                        'message' => 'login failed',
+                    ];
+                }
             },
             'formatters' => [
                 \yii\web\Response::FORMAT_JSON => [
@@ -74,6 +84,50 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                "POST api/register" => "user/register",
+                "OPTIONS api/register" => "option",
+
+                "POST api/login" => "user/login",
+                "OPTIONS api/register" => "option",
+
+                "POST api/add-product" => "product/add-product",
+                "OPTIONS api/add-product" => "option",
+
+                "POST api/add-category" => "product/add-category",
+                "OPTIONS api/add-category" => "option",
+
+                "POST api/get-products" => "product/get-products",
+                "OPTIONS api/get-products" => "option",
+
+                "POST api/create-basket" => "product/create-basket",
+                "OPTIONS api/create-basket" => "option",
+
+                "POST api/add-one-product/<id>" => "product/add-one-product",
+                "OPTIONS api/add-one-product/<id>" => "option",
+
+                "POST api/del-one-product/<id>" => "product/del-one-product",
+                "OPTIONS api/del-one-product/<id>" => "option",
+
+                "POST api/del-all-products/<id>" => "product/del-all-product",
+                "OPTIONS api/del-all-products/<id>" => "option",
+
+                "POST api/sum-for-basket" => "product/sum-for-basket",
+                "OPTIONS api/sum-for-basket" => "option",
+
+                "POST api/order" => "product/order",
+                "OPTIONS api/order" => "option",
+
+                "POST api/cancel-orders/<id>" => "product/cancel-orders",
+                "OPTIONS api/cancel-orders/<id>" => "option",
+
+                "GET api/get-orders" => "product/get-orders",
+                "OPTIONS api/get-orders" => "option",
+
+                "GET api/get-user-info" => "user/get-user-info",
+                "OPTIONS api/get-user-info" => "option",
+
+                "GET api/logout" => "user/logout",
+                "OPTIONS api/logout" => "option",
             ],
         ],
     ],

@@ -31,8 +31,7 @@ class ImagesProducts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'product_id', 'image'], 'required'],
-            [['id', 'product_id', 'image'], 'integer'],
+            [['product_id', 'image'], 'required'],
             [['product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Products::class, 'targetAttribute' => ['product_id' => 'id']],
         ];
     }

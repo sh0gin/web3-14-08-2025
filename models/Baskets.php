@@ -32,9 +32,10 @@ class Baskets extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'totalSum'], 'required'],
-            [['user_id', 'totalSum'], 'integer'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'required'],
+            [['user_id'], 'integer'],
+            [['user_id'], 'unique'],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -67,7 +68,7 @@ class Baskets extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::class, ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
 }

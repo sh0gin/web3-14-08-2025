@@ -8,8 +8,8 @@ use Yii;
  * This is the model class for table "OrdersProducts".
  *
  * @property int $id
- * @property int $id_products
- * @property int $id_orders
+ * @property int $products_id
+ * @property int $orders_idi
  * @property int $count
  * @property int $totalCount
  *
@@ -18,7 +18,7 @@ use Yii;
  */
 class OrdersProducts extends \yii\db\ActiveRecord
 {
-
+    public $data_of_creation;
 
     /**
      * {@inheritdoc}
@@ -34,10 +34,10 @@ class OrdersProducts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_products', 'id_orders', 'count', 'totalCount'], 'required'],
-            [['id_products', 'id_orders', 'count', 'totalCount'], 'integer'],
-            [['id_orders'], 'exist', 'skipOnError' => true, 'targetClass' => Orders::class, 'targetAttribute' => ['id_orders' => 'id']],
-            [['id_products'], 'exist', 'skipOnError' => true, 'targetClass' => Products::class, 'targetAttribute' => ['id_products' => 'id']],
+            [['products_id', 'orders_id', 'count', 'totalPrice'], 'required'],
+            [['products_id', 'orders_id', 'count', 'totalPrice'], 'integer'],
+            [['orders_id'], 'exist', 'skipOnError' => true, 'targetClass' => Orders::class, 'targetAttribute' => ['orders_id' => 'id']],
+            [['products_id'], 'exist', 'skipOnError' => true, 'targetClass' => Products::class, 'targetAttribute' => ['products_id' => 'id']],
         ];
     }
 
@@ -48,10 +48,10 @@ class OrdersProducts extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'id_products' => 'Id Products',
-            'id_orders' => 'Id Orders',
+            'products_id' => 'Id Products',
+            'orders_id' => 'Id Orders',
             'count' => 'Count',
-            'totalCount' => 'Total Count',
+            'totalPrice' => 'Total Price',
         ];
     }
 
@@ -62,7 +62,7 @@ class OrdersProducts extends \yii\db\ActiveRecord
      */
     public function getOrders()
     {
-        return $this->hasOne(Orders::class, ['id' => 'id_orders']);
+        return $this->hasOne(Orders::class, ['id' => 'orders_id']);
     }
 
     /**
@@ -72,7 +72,7 @@ class OrdersProducts extends \yii\db\ActiveRecord
      */
     public function getProducts()
     {
-        return $this->hasOne(Products::class, ['id' => 'id_products']);
+        return $this->hasOne(Products::class, ['id' => 'products_id']);
     }
 
 }

@@ -8,8 +8,8 @@ use Yii;
  * This is the model class for table "ProductBasket".
  *
  * @property int $id
- * @property int $id_products
- * @property int $id_basket
+ * @property int $products_id
+ * @property int $basket_id
  * @property int $count
  * @property int $totalPrice
  *
@@ -34,10 +34,10 @@ class ProductBasket extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_products', 'id_basket', 'count', 'totalPrice'], 'required'],
-            [['id_products', 'id_basket', 'count', 'totalPrice'], 'integer'],
-            [['id_basket'], 'exist', 'skipOnError' => true, 'targetClass' => Baskets::class, 'targetAttribute' => ['id_basket' => 'id']],
-            [['id_products'], 'exist', 'skipOnError' => true, 'targetClass' => Products::class, 'targetAttribute' => ['id_products' => 'id']],
+            [['products_id', 'basket_id', 'count', 'totalPrice'], 'required'],
+            [['products_id', 'basket_id', 'count', 'totalPrice'], 'integer'],
+            [['basket_id'], 'exist', 'skipOnError' => true, 'targetClass' => Baskets::class, 'targetAttribute' => ['basket_id' => 'id']],
+            [['products_id'], 'exist', 'skipOnError' => true, 'targetClass' => Products::class, 'targetAttribute' => ['products_id' => 'id']],
         ];
     }
 
@@ -48,8 +48,8 @@ class ProductBasket extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'id_products' => 'Id Products',
-            'id_basket' => 'Id Basket',
+            'products_id' => 'Id Products',
+            'basket_id' => 'Id Basket',
             'count' => 'Count',
             'totalPrice' => 'Total Price',
         ];
@@ -62,7 +62,7 @@ class ProductBasket extends \yii\db\ActiveRecord
      */
     public function getBasket()
     {
-        return $this->hasOne(Baskets::class, ['id' => 'id_basket']);
+        return $this->hasOne(Baskets::class, ['id' => 'basket_id']);
     }
 
     /**
@@ -72,7 +72,7 @@ class ProductBasket extends \yii\db\ActiveRecord
      */
     public function getProducts()
     {
-        return $this->hasOne(Products::class, ['id' => 'id_products']);
+        return $this->hasOne(Products::class, ['id' => 'products_id']);
     }
 
 }
