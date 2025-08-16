@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: MySQL-8.0
--- Время создания: Авг 15 2025 г., 07:47
+-- Время создания: Авг 16 2025 г., 22:31
 -- Версия сервера: 8.0.41
 -- Версия PHP: 8.2.26
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `Baskets` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `totalSum` int NOT NULL
+  `totalSum` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -44,6 +44,14 @@ CREATE TABLE `Category` (
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Дамп данных таблицы `Category`
+--
+
+INSERT INTO `Category` (`id`, `name`) VALUES
+(1, 'toys'),
+(2, 'fructs');
+
 -- --------------------------------------------------------
 
 --
@@ -53,8 +61,20 @@ CREATE TABLE `Category` (
 CREATE TABLE `ImagesProducts` (
   `id` int NOT NULL,
   `product_id` int NOT NULL,
-  `image` int NOT NULL
+  `image` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `ImagesProducts`
+--
+
+INSERT INTO `ImagesProducts` (`id`, `product_id`, `image`) VALUES
+(5, 7, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/_eW2WX-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(6, 7, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/gq7etm--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
+(7, 8, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/aE2qGx-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(8, 8, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/uyOpr4--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
+(9, 9, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/98QQzR-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(10, 9, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/6CkBUa--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg');
 
 -- --------------------------------------------------------
 
@@ -65,11 +85,21 @@ CREATE TABLE `ImagesProducts` (
 CREATE TABLE `Orders` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `data_of_creation` int NOT NULL,
+  `data_of_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `general_price` int NOT NULL,
   `track_code` varchar(255) NOT NULL,
   `status_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `Orders`
+--
+
+INSERT INTO `Orders` (`id`, `user_id`, `data_of_creation`, `general_price`, `track_code`, `status_id`) VALUES
+(16, 4, '2025-08-15 22:24:19', 1775, 'yX7uRIB3XQrh', 3),
+(17, 5, '2025-08-16 15:48:55', 3195, 'fKLVByzzLDng', 3),
+(18, 5, '2025-08-16 16:28:43', 710, 'OYjqqOS4inru', 1),
+(19, 4, '2025-08-16 19:28:29', 8875, '6FOJvnI-gZ0K', 1);
 
 -- --------------------------------------------------------
 
@@ -79,11 +109,24 @@ CREATE TABLE `Orders` (
 
 CREATE TABLE `OrdersProducts` (
   `id` int NOT NULL,
-  `id_products` int NOT NULL,
-  `id_orders` int NOT NULL,
+  `products_id` int NOT NULL,
+  `orders_id` int NOT NULL,
   `count` int NOT NULL,
-  `totalCount` int NOT NULL
+  `totalPrice` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `OrdersProducts`
+--
+
+INSERT INTO `OrdersProducts` (`id`, `products_id`, `orders_id`, `count`, `totalPrice`) VALUES
+(11, 8, 16, 3, 3),
+(12, 9, 16, 2, 2),
+(13, 7, 17, 7, 7),
+(14, 8, 17, 2, 2),
+(15, 8, 18, 2, 2),
+(16, 8, 19, 1, 1),
+(17, 9, 19, 24, 24);
 
 -- --------------------------------------------------------
 
@@ -93,8 +136,8 @@ CREATE TABLE `OrdersProducts` (
 
 CREATE TABLE `ProductBasket` (
   `id` int NOT NULL,
-  `id_products` int NOT NULL,
-  `id_basket` int NOT NULL,
+  `products_id` int NOT NULL,
+  `basket_id` int NOT NULL,
   `count` int NOT NULL,
   `totalPrice` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -113,6 +156,15 @@ CREATE TABLE `Products` (
   `price` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Дамп данных таблицы `Products`
+--
+
+INSERT INTO `Products` (`id`, `name`, `category_id`, `quantity`, `price`) VALUES
+(7, 'jjj12d', 2, 500, 355),
+(8, 'Toys Cars 4', 2, 494, 355),
+(9, 'TeddyBears3', 2, 476, 355);
+
 -- --------------------------------------------------------
 
 --
@@ -124,6 +176,15 @@ CREATE TABLE `Reason_cancellation` (
   `order_id` int NOT NULL,
   `text` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `Reason_cancellation`
+--
+
+INSERT INTO `Reason_cancellation` (`id`, `order_id`, `text`) VALUES
+(2, 16, 'potomy chto'),
+(3, 16, 'potomy chto'),
+(4, 17, 'potomy chto');
 
 -- --------------------------------------------------------
 
@@ -175,10 +236,19 @@ CREATE TABLE `Users` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `balance` int NOT NULL,
-  `token` varchar(255) NOT NULL,
-  `role_id` int NOT NULL
+  `password` varchar(255) NOT NULL,
+  `balance` int NOT NULL DEFAULT '0',
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `role_id` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `Users`
+--
+
+INSERT INTO `Users` (`id`, `first_name`, `last_name`, `email`, `password`, `balance`, `token`, `role_id`) VALUES
+(4, 'Egr', 'Frkv', 'email@mail.ru', '$2y$13$FRyvnW5Q27QbFRvAsIjcwuRsH3WGJqhjdfyvVjPl8nizOWL714xSG', 125, 'smGiR7A7HKcwCTxHYqfJkFogHr4Fh97r', 2),
+(5, 'ff', 'f', 'email2@mail.ru', '$2y$13$HGAPIgEm0tOlSUzLS.A1cuX1t9Z84pZkG0kkYAh00xwZrqOjx6Yoe', 0, NULL, 1);
 
 --
 -- Индексы сохранённых таблиц
@@ -201,6 +271,7 @@ ALTER TABLE `Category`
 -- Индексы таблицы `ImagesProducts`
 --
 ALTER TABLE `ImagesProducts`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `product_id` (`product_id`);
 
 --
@@ -216,16 +287,16 @@ ALTER TABLE `Orders`
 --
 ALTER TABLE `OrdersProducts`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_orders` (`id_orders`),
-  ADD KEY `id_products` (`id_products`);
+  ADD KEY `id_orders` (`orders_id`),
+  ADD KEY `id_products` (`products_id`);
 
 --
 -- Индексы таблицы `ProductBasket`
 --
 ALTER TABLE `ProductBasket`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `basket_id` (`id_basket`),
-  ADD KEY `products_id` (`id_products`);
+  ADD KEY `basket_id` (`basket_id`),
+  ADD KEY `products_id` (`products_id`);
 
 --
 -- Индексы таблицы `Products`
@@ -268,43 +339,49 @@ ALTER TABLE `Users`
 -- AUTO_INCREMENT для таблицы `Baskets`
 --
 ALTER TABLE `Baskets`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT для таблицы `Category`
 --
 ALTER TABLE `Category`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT для таблицы `ImagesProducts`
+--
+ALTER TABLE `ImagesProducts`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `Orders`
 --
 ALTER TABLE `Orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT для таблицы `OrdersProducts`
 --
 ALTER TABLE `OrdersProducts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT для таблицы `ProductBasket`
 --
 ALTER TABLE `ProductBasket`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT для таблицы `Products`
 --
 ALTER TABLE `Products`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT для таблицы `Reason_cancellation`
 --
 ALTER TABLE `Reason_cancellation`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `Role`
@@ -322,7 +399,7 @@ ALTER TABLE `Status_orders`
 -- AUTO_INCREMENT для таблицы `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -351,15 +428,15 @@ ALTER TABLE `Orders`
 -- Ограничения внешнего ключа таблицы `OrdersProducts`
 --
 ALTER TABLE `OrdersProducts`
-  ADD CONSTRAINT `ordersproducts_ibfk_1` FOREIGN KEY (`id_orders`) REFERENCES `Orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `ordersproducts_ibfk_2` FOREIGN KEY (`id_products`) REFERENCES `Products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ordersproducts_ibfk_1` FOREIGN KEY (`orders_id`) REFERENCES `Orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ordersproducts_ibfk_2` FOREIGN KEY (`products_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `ProductBasket`
 --
 ALTER TABLE `ProductBasket`
-  ADD CONSTRAINT `productbasket_ibfk_1` FOREIGN KEY (`id_basket`) REFERENCES `Baskets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `productbasket_ibfk_2` FOREIGN KEY (`id_products`) REFERENCES `Products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `productbasket_ibfk_1` FOREIGN KEY (`basket_id`) REFERENCES `Baskets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `productbasket_ibfk_2` FOREIGN KEY (`products_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `Products`

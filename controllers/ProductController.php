@@ -53,7 +53,7 @@ class ProductController extends ActiveController
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders'],
+            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders', 'put-balance'],
         ];
 
         // re-add authentication filter
@@ -338,46 +338,59 @@ class ProductController extends ActiveController
     {
         $model_basket = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
         if ($model_basket) {
-
+            
             $model_productsBasket = ProductBasket::findAll(['basket_id' => $model_basket->id]);
             $orders = new Orders();
             $orders->user_id = Yii::$app->user->identity->id;
-
-            $sum = 0;  // можно асивее сделть
+            
+            $sum = 0;  // можно красивее сделть
             foreach ($model_productsBasket as $value) {
                 $sum += $value->totalPrice;
             }
+            if ($sum < Yii::$app->user->identity->balance) {
+                
+                
+                $orders->general_price = $sum;
+                $orders->track_code = Yii::$app->security->generateRandomString(12);
+                $orders->status_id = 1;
+                $orders->save(false);
 
-            $orders->general_price = $sum;
-            $orders->track_code = Yii::$app->security->generateRandomString(12);
-            $orders->status_id = 1;
-            $orders->save(false);
 
+                if ($model_productsBasket) {
+                    foreach ($model_productsBasket as $value) {
+                        $model_productsOrders = new OrdersProducts();
+                        $model_productsOrders->products_id = $value->products_id;
+                        $model_productsOrders->count = $value->count;
+                        $model_productsOrders->totalPrice = $value->count;
+                        $model_productsOrders->orders_id = $orders->id;
+                        $model_productsOrders->save();
+                    }
+                    $user = User::findOne(Yii::$app->user->identity->id);
+                    $user->balance -= $sum;
+                    $user->save(false);
 
-            if ($model_productsBasket) {
-                foreach ($model_productsBasket as $value) {
-                    $model_productsOrders = new OrdersProducts();
-                    $model_productsOrders->products_id = $value->products_id;
-                    $model_productsOrders->count = $value->count;
-                    $model_productsOrders->totalPrice = $value->count;
-                    $model_productsOrders->orders_id = $orders->id;
-                    $model_productsOrders->save();
+                    $model_basket->delete();
+                    return $this->asJson([
+                        'data' => [
+                            'orders' => [
+                                'track_code' => $orders->track_code,
+                                'general_price' => $orders->general_price,
+                                'status' => StatusOrders::getStatusName($orders->status_id),
+                                'balance_now' => $user->balance,
+                            ],
+                            'code' => 201,
+                            'message' => "Заказ оформлен"
+                        ]
+                    ]);
+                } else {
+                    Yii::$app->response->statusCode = 403;
                 }
-                $model_basket->delete();
+            } else {
                 return $this->asJson([
-                    'data' => [
-                        'orders' => [
-                            'track_code' => $orders->track_code,
-                            'general_price' => $orders->general_price,
-                            'status' => StatusOrders::getStatusName($orders->status_id),
-                            // 'data' => $orders->data_of_creation,
-                        ],
-                        'code' => 201,
-                        'message' => "Заказ оформлен"
+                    'error' => [
+                        'message' => 'Недостаточно средств',
                     ]
                 ]);
-            } else {
-                Yii::$app->response->statusCode = 403;
             }
         } else {
             Yii::$app->response->statusCode = 403;
@@ -470,5 +483,14 @@ class ProductController extends ActiveController
             'data' => $result,
             'user' => Yii::$app->user->identity->email,
         ]);
+    }
+
+    public function actionPutBalance()
+    {
+        $user = User::findOne(Yii::$app->user->identity->id);
+        $user->balance += Yii::$app->request->post()['money'];
+        $user->save();
+        Yii::$app->response->statusCode = 201;
+        return;
     }
 }
