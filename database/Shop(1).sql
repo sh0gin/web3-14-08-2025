@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: MySQL-8.0
--- Время создания: Авг 16 2025 г., 22:31
+-- Время создания: Авг 18 2025 г., 18:04
 -- Версия сервера: 8.0.41
 -- Версия PHP: 8.2.26
 
@@ -50,7 +50,8 @@ CREATE TABLE `Category` (
 
 INSERT INTO `Category` (`id`, `name`) VALUES
 (1, 'toys'),
-(2, 'fructs');
+(2, 'fructs'),
+(3, 'toy');
 
 -- --------------------------------------------------------
 
@@ -69,12 +70,18 @@ CREATE TABLE `ImagesProducts` (
 --
 
 INSERT INTO `ImagesProducts` (`id`, `product_id`, `image`) VALUES
-(5, 7, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/_eW2WX-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(6, 7, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/gq7etm--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
-(7, 8, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/aE2qGx-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(8, 8, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/uyOpr4--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
-(9, 9, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/98QQzR-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(10, 9, 'C:\\OSPanel\\home\\web3-14-08-2025\\controllers/../imageForProduct/6CkBUa--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg');
+(22, 19, 'imageForProduct9ZMPXh-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(23, 19, 'imageForProduct9-gG8S--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
+(24, 19, 'imageForProductENLlp9-sample-city-park-400x300.jpg'),
+(25, 20, 'imageForProducti9-JIA-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(26, 20, 'imageForProductDNTAR6--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
+(27, 20, 'imageForProduct6FCK2m-sample-city-park-400x300.jpg'),
+(28, 21, 'imageForProductM-Ggon-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(29, 21, 'imageForProductHz6Nip--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
+(30, 21, 'imageForProductYPHbBP-sample-city-park-400x300.jpg'),
+(31, 22, 'imageForProductZavTPb-312c10f6e2f6cfee7afd836555965079.jpeg'),
+(32, 22, 'imageForProduct4vXcln--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
+(33, 22, 'imageForProducthEaYku-sample-city-park-400x300.jpg');
 
 -- --------------------------------------------------------
 
@@ -99,7 +106,8 @@ INSERT INTO `Orders` (`id`, `user_id`, `data_of_creation`, `general_price`, `tra
 (16, 4, '2025-08-15 22:24:19', 1775, 'yX7uRIB3XQrh', 3),
 (17, 5, '2025-08-16 15:48:55', 3195, 'fKLVByzzLDng', 3),
 (18, 5, '2025-08-16 16:28:43', 710, 'OYjqqOS4inru', 1),
-(19, 4, '2025-08-16 19:28:29', 8875, '6FOJvnI-gZ0K', 1);
+(19, 4, '2025-08-16 19:28:29', 8875, '6FOJvnI-gZ0K', 1),
+(20, 8, '2025-08-18 11:49:02', 176, 'NYZnTLhCg3Nt', 3);
 
 -- --------------------------------------------------------
 
@@ -120,13 +128,7 @@ CREATE TABLE `OrdersProducts` (
 --
 
 INSERT INTO `OrdersProducts` (`id`, `products_id`, `orders_id`, `count`, `totalPrice`) VALUES
-(11, 8, 16, 3, 3),
-(12, 9, 16, 2, 2),
-(13, 7, 17, 7, 7),
-(14, 8, 17, 2, 2),
-(15, 8, 18, 2, 2),
-(16, 8, 19, 1, 1),
-(17, 9, 19, 24, 24);
+(18, 21, 20, 4, 4);
 
 -- --------------------------------------------------------
 
@@ -161,9 +163,10 @@ CREATE TABLE `Products` (
 --
 
 INSERT INTO `Products` (`id`, `name`, `category_id`, `quantity`, `price`) VALUES
-(7, 'jjj12d', 2, 500, 355),
-(8, 'Toys Cars 4', 2, 494, 355),
-(9, 'TeddyBears3', 2, 476, 355);
+(19, 'joy__2', 2, 2351, 44),
+(20, 'joy__3', 2, 2356, 44),
+(21, 'joy__4', 2, 2356, 44),
+(22, 'joy__56', 2, 2356, 44);
 
 -- --------------------------------------------------------
 
@@ -184,7 +187,8 @@ CREATE TABLE `Reason_cancellation` (
 INSERT INTO `Reason_cancellation` (`id`, `order_id`, `text`) VALUES
 (2, 16, 'potomy chto'),
 (3, 16, 'potomy chto'),
-(4, 17, 'potomy chto');
+(4, 17, 'potomy chto'),
+(5, 20, 'Potomy how 23');
 
 -- --------------------------------------------------------
 
@@ -247,8 +251,11 @@ CREATE TABLE `Users` (
 --
 
 INSERT INTO `Users` (`id`, `first_name`, `last_name`, `email`, `password`, `balance`, `token`, `role_id`) VALUES
-(4, 'Egr', 'Frkv', 'email@mail.ru', '$2y$13$FRyvnW5Q27QbFRvAsIjcwuRsH3WGJqhjdfyvVjPl8nizOWL714xSG', 125, 'smGiR7A7HKcwCTxHYqfJkFogHr4Fh97r', 2),
-(5, 'ff', 'f', 'email2@mail.ru', '$2y$13$HGAPIgEm0tOlSUzLS.A1cuX1t9Z84pZkG0kkYAh00xwZrqOjx6Yoe', 0, NULL, 1);
+(4, 'Egr', 'Frkv', 'email@mail.ru', '$2y$13$FRyvnW5Q27QbFRvAsIjcwuRsH3WGJqhjdfyvVjPl8nizOWL714xSG', 125, 'yvOi5W5fBhJhaQEtMn5HmJRDREnA9tSE', 2),
+(5, 'ff', 'f', 'email2@mail.ru', '$2y$13$HGAPIgEm0tOlSUzLS.A1cuX1t9Z84pZkG0kkYAh00xwZrqOjx6Yoe', 0, 'yO44JVdDkff4GTIEizeY0vqZu9rMmuZZ', 1),
+(6, 'Egr', 'Frkv', 'email3@mail.ru', '$2y$13$UzH2kNcUM/tgpMmJ.zelfeTE5QDyXnI8DOM/m..HTGjVklV.GQMYa', 0, NULL, 1),
+(7, 'Egr', 'Frkv', 'email6@mail.ru', '$2y$13$.Qpg2gqUoSUfVgBTMcr5..a/qm6NM0McQOWOeTHvNVvFugw9fyrgy', 0, NULL, 1),
+(8, 'Egr', 'Frkv', 'admin@mail.ru', '$2y$13$XxmrFFZdE.LElXsHlc9myOhiKvqC1ry2rMbRH3yf5xeVYt0ZM4zcy', 148, 'h0dOFyR7j736qLSJTg-vTnfXioBOwFNl', 2);
 
 --
 -- Индексы сохранённых таблиц
@@ -339,49 +346,49 @@ ALTER TABLE `Users`
 -- AUTO_INCREMENT для таблицы `Baskets`
 --
 ALTER TABLE `Baskets`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT для таблицы `Category`
 --
 ALTER TABLE `Category`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `ImagesProducts`
 --
 ALTER TABLE `ImagesProducts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT для таблицы `Orders`
 --
 ALTER TABLE `Orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT для таблицы `OrdersProducts`
 --
 ALTER TABLE `OrdersProducts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT для таблицы `ProductBasket`
 --
 ALTER TABLE `ProductBasket`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT для таблицы `Products`
 --
 ALTER TABLE `Products`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT для таблицы `Reason_cancellation`
 --
 ALTER TABLE `Reason_cancellation`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `Role`
@@ -399,7 +406,7 @@ ALTER TABLE `Status_orders`
 -- AUTO_INCREMENT для таблицы `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
