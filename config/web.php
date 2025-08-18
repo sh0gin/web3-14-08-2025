@@ -56,7 +56,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\models\Users',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
@@ -85,52 +85,51 @@ $config = [
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
                 "POST api/register" => "user/register",
-                "OPTIONS api/register" => "option",
+                "OPTIONS api/register" => "options",
 
                 "POST api/login" => "user/login",
-                "OPTIONS api/login" => "option",
+                "OPTIONS api/login" => "options",
 
                 "POST api/add-product" => "product/add-product",
-                "OPTIONS api/add-product" => "option",
+                "OPTIONS api/add-product" => "options",
 
                 "POST api/add-category" => "product/add-category",
-                "OPTIONS api/add-category" => "option",
+                "OPTIONS api/add-category" => "options",
 
                 "POST api/get-products" => "product/get-products",
-                "OPTIONS api/get-products" => "option",
-
-                "POST api/create-basket" => "product/create-basket",
-                "OPTIONS api/create-basket" => "option",
+                "OPTIONS api/get-products" => "options",
 
                 "POST api/add-one-product/<id>" => "product/add-one-product",
-                "OPTIONS api/add-one-product/<id>" => "option",
+                "OPTIONS api/add-one-product/<id>" => "options",
 
                 "POST api/del-one-product/<id>" => "product/del-one-product",
-                "OPTIONS api/del-one-product/<id>" => "option",
+                "OPTIONS api/del-one-product/<id>" => "options",
 
                 "POST api/del-all-products/<id>" => "product/del-all-product",
-                "OPTIONS api/del-all-products/<id>" => "option",
+                "OPTIONS api/del-all-products/<id>" => "options",
 
-                "POST api/sum-for-basket" => "product/sum-for-basket",
-                "OPTIONS api/sum-for-basket" => "option",
+                // "POST api/sum-for-basket" => "product/                                                               
 
                 "POST api/order" => "product/order",
-                "OPTIONS api/order" => "option",
+                "OPTIONS api/order" => "options",
 
                 "POST api/cancel-orders/<id>" => "product/cancel-orders",
-                "OPTIONS api/cancel-orders/<id>" => "option",
+                "OPTIONS api/cancel-orders/<id>" => "options",
 
                 "POST api/put-balance" => "product/put-balance",
-                "OPTIONS api/cancel-orders/<id>" => "option",
+                "OPTIONS api/cancel-orders/<id>" => "options",
 
                 "GET api/get-orders" => "product/get-orders",
-                "OPTIONS api/get-orders" => "option",
+                "OPTIONS api/get-orders" => "options",
 
                 "GET api/get-user-info" => "user/get-user-info",
-                "OPTIONS api/get-user-info" => "option",
+                "OPTIONS api/get-user-info" => "options",
 
                 "GET api/logout" => "user/logout",
-                "OPTIONS api/logout" => "option",
+                "OPTIONS api/logout" => "options",
+
+                "POST api/search" => "product/search-products",
+                "OPTIONS api/search" => "options",
             ],
         ],
     ],

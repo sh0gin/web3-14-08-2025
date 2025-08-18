@@ -21,9 +21,9 @@ use yii\web\IdentityInterface;
  * @property Orders[] $orders
  * @property Role $role
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface
+class Users extends \yii\db\ActiveRecord implements IdentityInterface
 {
-
+    public $money;
     /**
      * {@inheritdoc}
      */
@@ -43,7 +43,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             ['email', 'email'],
             ['email', 'unique', 'on' => 'register'],
             ['password', 'match', 'pattern' => '/(?=.*[a-z])(?=.*[0-9])[0-9a-zA-Z!@#$%^&*]{6}/'],
-            
+            ['money', 'required', 'on' => 'mon'],
+            ['money', 'integer', 'on' => 'mon'],
         ];
     }
 

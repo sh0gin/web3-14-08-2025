@@ -11,8 +11,7 @@ use app\models\ProductBasket;
 use app\models\Products;
 use app\models\ReasonCancellation;
 use app\models\StatusOrders;
-use app\models\User;
-use GuzzleHttp\Psr7\UploadedFile;
+use app\models\Users;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -109,7 +108,7 @@ class ProductController extends ActiveController
 
     public function actionAddProduct()
     {
-        $user = User::findOne(Yii::$app->user->identity->id);
+        $user = Users::findOne(Yii::$app->user->identity->id);
         if ($user->isAdmin()) {
             $model = new Products();
             $model->load(Yii::$app->request->post(), '');
@@ -157,7 +156,7 @@ class ProductController extends ActiveController
 
     public function actionAddCategory()
     {
-        $model_user = User::findOne(Yii::$app->user->identity->id);
+        $model_user = Users::findOne(Yii::$app->user->identity->id);
         if ($model_user->isAdmin()) {
             $model = new Category();
             $model->load(Yii::$app->request->post(), '');
@@ -203,7 +202,7 @@ class ProductController extends ActiveController
         $result = [];
         foreach ($provider->getModels() as $value) {
 
-            $value['file_url'] = array_map(fn($value) => $value['file_url'],ImagesProducts::find()
+            $value['file_url'] = array_map(fn($value) => $value['file_url'], ImagesProducts::find()
                 ->select([
                     "CONCAT('"
                         . Yii::$app->request->getHostInfo()
@@ -222,29 +221,6 @@ class ProductController extends ActiveController
             'code' => 200,
             'message' => 'Все продукты получены',
         ]);
-    }
-
-    public function actionCreateBasket()
-    {
-        $model = new Baskets();
-        $model->user_id = Yii::$app->user->identity->id;
-        if ($model->save()) {
-            Yii::$app->response->statusCode = 201;
-            return $this->asJson([
-                'data' => [
-                    'code' => 201,
-                    'message' => 'Корзина создана',
-                ]
-            ]);
-        } else {
-            return $this->asJson([
-                'error' => [
-                    'code' => 422,
-                    'message' => "Validation Erorr",
-                    'error' => $model->errors,
-                ]
-            ]);
-        };
     }
 
     public function actionAddOneProduct($id)
@@ -361,27 +337,27 @@ class ProductController extends ActiveController
         }
     }
 
-    public function actionSumForBasket()
-    {
-        $basket = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
-        $model = ProductBasket::findAll(['basket_id' => $basket->id]);
+    // public function actionSumForBasket()
+    // {
+    //     $basket = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
+    //     $model = ProductBasket::findAll(['basket_id' => $basket->id]);
 
-        $sum = 0;  // можно асивее сделть
-        foreach ($model as $value) {
-            $sum += $value->totalPrice;
-        }
+    //     $sum = 0;  // можно rhасивее сделть
+    //     foreach ($model as $value) {
+    //         $sum += $value->totalPrice;
+    //     }
 
-        $basket->totalSum = $sum;
-        $basket->save();
+    //     $basket->totalSum = $sum;
+    //     $basket->save();
 
-        return $this->asJson([
-            'data' => [
-                'totalCount' => $basket->totalSum,
-            ],
-            'code' => 200,
-            'message' => 'Сумма установленна',
-        ]);
-    }
+    //     return $this->asJson([
+    //         'data' => [
+    //             'totalCount' => $basket->totalSum,
+    //         ],
+    //         'code' => 200,
+    //         'message' => 'Сумма установленна',
+    //     ]);
+    // }
 
     public function actionOrder()
     {
@@ -392,10 +368,11 @@ class ProductController extends ActiveController
             $orders = new Orders();
             $orders->user_id = Yii::$app->user->identity->id;
 
-            $sum = 0;  // можно красивее сделть
+            $sum = 0;
             foreach ($model_productsBasket as $value) {
                 $sum += $value->totalPrice;
             }
+
             if ($sum < Yii::$app->user->identity->balance) {
 
 
@@ -414,7 +391,7 @@ class ProductController extends ActiveController
                         $model_productsOrders->orders_id = $orders->id;
                         $model_productsOrders->save();
                     }
-                    $user = User::findOne(Yii::$app->user->identity->id);
+                    $user = Users::findOne(Yii::$app->user->identity->id);
                     $user->balance -= $sum;
                     $user->save(false);
 
@@ -448,6 +425,7 @@ class ProductController extends ActiveController
 
     public function actionDelAllProduct($id)
     {
+
         $basket_model = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
         if ($basket_model) {
             $model = ProductBasket::findOne(['basket_id' => $basket_model->id, 'products_id' => $id]);
@@ -455,15 +433,14 @@ class ProductController extends ActiveController
                 $product = Products::findOne($model->products_id);
                 $product->quantity += $model->count;
                 $product->save();
-                
+
                 $model->delete();
-                
+
                 $basketProduct = ProductBasket::findOne(['basket_id' => $basket_model->id]);
                 if ($basketProduct) {
                     $basket_model->totalSum -= $model->totalPrice;
                     $basket_model->save();
                 } else {
-                    return 123;
                     $basket_model->delete();
                 }
 
@@ -483,13 +460,13 @@ class ProductController extends ActiveController
     public function actionCancelOrders($id)
     {
         $model = Orders::findOne($id);
-        $user = User::findOne(Yii::$app->user->identity->id);
+        $user = Users::findOne(Yii::$app->user->identity->id);
         if ($user->isAdmin()) {
             if ($model) {
                 if ($model->status_id == 1) {
                     $new_cancel = new ReasonCancellation();
                     $new_cancel->order_id = $id;
-                    $new_cancel->text = Yii::$app->request->post()['text'];
+                    $new_cancel->load(Yii::$app->request->post(), '');
                     if ($new_cancel->save()) {
                         $model->status_id = 3;
                         $model->save(false);
@@ -513,7 +490,7 @@ class ProductController extends ActiveController
                             'error' => [
                                 'code' => 422,
                                 'message' => "Validation Erorr",
-                                'error' => $model->errors,
+                                'error' => $new_cancel->errors,
                             ]
                         ]);
                     }
@@ -551,10 +528,37 @@ class ProductController extends ActiveController
 
     public function actionPutBalance()
     {
-        $user = User::findOne(Yii::$app->user->identity->id);
-        $user->balance += Yii::$app->request->post()['money'];
-        $user->save();
-        Yii::$app->response->statusCode = 201;
-        return;
+        $user = Users::findOne(Yii::$app->user->identity->id);
+        if (array_key_exists('balance', Yii::$app->request->post())) {
+            $user->balance += (int) Yii::$app->request->post()['balance'];
+            $user->save();
+            Yii::$app->response->statusCode = 201;
+            return;
+        } else {
+            return $this->asJson([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Validation Error',
+                ]
+            ]);
+        }
+    }
+
+    public function actionSearchProducts()
+    {
+        $model = Products::findOne(['name'  => Yii::$app->request->post()['name']]);
+        if ($model) {
+            return $this->asJson([
+                'data' => [
+                    'id' => $model->id,
+                    'name'  => $model->name,
+                    'category' => Category::getCategoryName($model->category_id),
+                    'quantity' => $model->quantity,
+                    'price' => $model->price,
+                ]
+            ]);
+        } else {
+            Yii::$app->response->statusCode = 404;
+        }
     }
 }

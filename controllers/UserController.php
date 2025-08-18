@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use app\models\Role;
-use app\models\User;
+use app\models\Users;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\rest\ActiveController;
@@ -69,7 +69,7 @@ class UserController extends ActiveController
 
     public function actionRegister()
     {
-        $model = new User(['scenario' => 'register']);
+        $model = new Users(['scenario' => 'register']);
         $model->load(Yii::$app->request->post(), '');
         if ($model->validate()) {
             $model->password = Yii::$app->security->generatePasswordHash($model->password);
@@ -95,12 +95,12 @@ class UserController extends ActiveController
     public function actionLogin()
     {
         $post = Yii::$app->request->post();
-        $model = new User();
+        $model = new Users();
         $model->load($post, '');
 
 
         if ($model->validate()) {
-            $model = User::findOne(['email' => $post['email']]);
+            $model = Users::findOne(['email' => $post['email']]);
             if ($model && $model->validatePassword($post['password'])) {
                 $model->token = Yii::$app->security->generateRandomString();
                 $model->save(false);
@@ -132,7 +132,7 @@ class UserController extends ActiveController
 
     public function actionGetUserInfo()
     {
-        $model = User::findOne(Yii::$app->user->identity->id);
+        $model = Users::findOne(Yii::$app->user->identity->id);
 
         return $this->asJson([
             'data' => [
@@ -149,7 +149,7 @@ class UserController extends ActiveController
     }
 
     public function actionLogout() {
-        $model = User::findOne(Yii::$app->user->identity->id);
+        $model = Users::findOne(Yii::$app->user->identity->id);
         $model->token = null;
         $model->save(false);
         Yii::$app->response->statusCode = 201;
