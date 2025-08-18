@@ -31,7 +31,10 @@ class UserController extends ActiveController
                 'Access-Control-Request-Headers' => ['*'],
             ],
             'actions' => [
-                'login' => [
+                'logout' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'get-user-info' => [
                     'Access-Control-Allow-Credentials' => true,
                 ]
             ],
@@ -66,8 +69,7 @@ class UserController extends ActiveController
 
     public function actionRegister()
     {
-        // return 314;
-        $model = new User();
+        $model = new User(['scenario' => 'register']);
         $model->load(Yii::$app->request->post(), '');
         if ($model->validate()) {
             $model->password = Yii::$app->security->generatePasswordHash($model->password);
@@ -93,12 +95,14 @@ class UserController extends ActiveController
     public function actionLogin()
     {
         $post = Yii::$app->request->post();
-        $model = User::findOne(['email' => $post['email']]);
+        $model = new User();
+        $model->load($post, '');
 
-        if ($model) {
-            if ($model->validatePassword($post['password'])) {
+
+        if ($model->validate()) {
+            $model = User::findOne(['email' => $post['email']]);
+            if ($model && $model->validatePassword($post['password'])) {
                 $model->token = Yii::$app->security->generateRandomString();
-
                 $model->save(false);
                 return $this->asJson([
                     'data' => [
@@ -116,7 +120,13 @@ class UserController extends ActiveController
                 Yii::$app->response->statusCode = 401;
             }
         } else {
-            Yii::$app->response->statusCode = 404;
+            return $this->asJson([
+                'error' => [
+                    'code' => 422,
+                    'message' => "Validation Erorr",
+                    'error' => $model->errors,
+                ]
+            ]);
         }
     }
 
@@ -143,5 +153,6 @@ class UserController extends ActiveController
         $model->token = null;
         $model->save(false);
         Yii::$app->response->statusCode = 201;
+        return;
     }
 }

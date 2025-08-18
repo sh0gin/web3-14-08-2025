@@ -30,7 +30,7 @@ class ProductController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-
+        // проверка админа, 
         // remove authentication filter
         $auth = $behaviors['authenticator'];
         unset($behaviors['authenticator']);
@@ -44,9 +44,39 @@ class ProductController extends ActiveController
                 'Access-Control-Request-Headers' => ['*'],
             ],
             'actions' => [
-                'login' => [
+                'add-product' => [
                     'Access-Control-Allow-Credentials' => true,
-                ]
+                ],
+                'add-category' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'create-basket' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'add-one-product' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'put-balance' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'get-orders' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'cancel-orders' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'del-all-product' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'order' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'sum-for-basket' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'del-one-product' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
             ],
         ];
 
@@ -79,7 +109,8 @@ class ProductController extends ActiveController
 
     public function actionAddProduct()
     {
-        if (Yii::$app->user->identity->role_id == 2) {
+        $user = User::findOne(Yii::$app->user->identity->id);
+        if ($user->isAdmin()) {
             $model = new Products();
             $model->load(Yii::$app->request->post(), '');
             $model->files = WebUploadedFile::getInstancesByName('files');
@@ -87,25 +118,30 @@ class ProductController extends ActiveController
                 $files = [];
                 $model->save();
                 foreach ($model->files as $value) {
+
                     $model_files = new ImagesProducts();
-                    $random = Yii::$app->security->generateRandomString(6);
-                    $file_path = __DIR__ . "/../imageForProduct/$random-{$value->name}";
+                    $file = "imageForProduct" . Yii::$app->security->generateRandomString(6) . "-{$value->name}";
+                    $file_path = __DIR__ . "/../$file";
                     $value->saveAs($file_path);
-                    $model_files->image = $file_path;
+                    $model_files->image = $file;
                     $model_files->product_id = $model->id;
                     $model_files->save(false);
-                    $files[] = $file_path;
+                    $files[] = Yii::$app->request->getHostInfo() . '/imageForProduct/' . $file;
                 }
+
+
                 return $this->asJson([
                     'data' => [
                         'id' => $model->id,
-                        'category' => $model->name,
+                        'name' => $model->name,
+                        'category' => $model->category->name,
                     ],
                     'files' => $files,
                     'code' => 200,
                     'message' => 'new product add',
                 ]);
             } else {
+                Yii::$app->response->statusCode = 422;
                 return $this->asJson([
                     'error' => [
                         'code' => 422,
@@ -115,13 +151,14 @@ class ProductController extends ActiveController
                 ]);
             }
         } else {
-            Yii::$app->respones->statusCode = 403;
+            Yii::$app->response->statusCode = 403;
         }
     }
 
     public function actionAddCategory()
     {
-        if (Yii::$app->user->identity->role_id == 2) {
+        $model_user = User::findOne(Yii::$app->user->identity->id);
+        if ($model_user->isAdmin()) {
             $model = new Category();
             $model->load(Yii::$app->request->post(), '');
             if ($model->validate()) {
@@ -144,31 +181,42 @@ class ProductController extends ActiveController
                 ]);
             }
         } else {
-            Yii::$app->respones->statusCode = 403;
+            Yii::$app->response->statusCode = 403;
         }
     }
 
     public function actionGetProducts()
     {
         $query = new Query();
-        $query->select('products.id, products.name, price, quantity, category.name as category, image')
+        $query->select('products.id, products.name, price, quantity, category.name as category')
             ->from("Products")
-            ->innerJoin('ImagesProducts', 'products.id=imagesproducts.product_id')
             ->innerJoin('Category', 'products.category_id=category.id');
 
         $provider = new ActiveDataProvider([
             "query" => $query,
-
         ]);
 
         $post = Yii::$app->request->post();
         if ($post) {
             $provider->setPagination(['pageSize' => $post['count'], 'page' => $post['page']]);
         }
+        $result = [];
+        foreach ($provider->getModels() as $value) {
+
+            $value['file_url'] = array_map(fn($value) => $value['file_url'],ImagesProducts::find()
+                ->select([
+                    "CONCAT('"
+                        . Yii::$app->request->getHostInfo()
+                        . "/imageForProduct/', image) as file_url"
+                ])
+                ->where(['product_id' => $value['id']])->asArray()->ALL());
+            $result[] = $value;
+        }
+        return $result;
 
         return $this->asJson([
             'data' => [
-                'products' => $provider->getModels(),
+                'products' => $result,
                 'totalCount' => $provider->totalCount,
             ],
             'code' => 200,
@@ -203,49 +251,51 @@ class ProductController extends ActiveController
     {
         $basket = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
 
-        if ($basket) {
-            $product = Products::findOne($id);
-            if ($product) {
+        if (!$basket) {
+            $basket = new Baskets();
+            $basket->user_id = Yii::$app->user->identity->id;
+            $basket->save(false);
+        }
 
-                if ($product->quantity > 0) {
-                    $model = ProductBasket::findOne(['basket_id' => $basket->id, 'products_id' => $product->id]);
-                    $basket->totalSum += $product->price;
-                    $basket->save(false);
-                    if ($model) {
-                        $model->count += 1;
-                        $model->totalPrice += $product->price;
-                        $product->quantity -= 1;
-                        $product->save();
-                    } else {
-                        $model = new ProductBasket();
-                        $model->products_id = $id;
-                        $model->basket_id = $basket->id;
-                        $model->count = 1;
-                        $model->totalPrice = $product->price;
-                        $product->quantity -= 1;
-                        $product->save();
-                    }
-                    if ($model->save()) {
-                        return $this->asJson([
-                            'data' => [
-                                'product_name' => $product->name,
-                                'count_product' => $model->count,
-                                'total_price_for_product' => $model->totalPrice,
-                            ],
-                            'code' => 200,
-                            'message' => 'Единица товара добавлена',
-                        ]);
-                    } else {
-                        return $this->asJson([
-                            'error' => [
-                                'code' => 422,
-                                'message' => "Validation Erorr",
-                                'error' => $model->errors,
-                            ]
-                        ]);
-                    }
+        $product = Products::findOne($id);
+        if ($product) {
+
+            if ($product->quantity > 0) {
+                $model = ProductBasket::findOne(['basket_id' => $basket->id, 'products_id' => $product->id]);
+                $basket->totalSum += $product->price;
+                $basket->save(false);
+                if ($model) {
+                    $model->count += 1;
+                    $model->totalPrice += $product->price;
+                    $product->quantity -= 1;
+                    $product->save();
                 } else {
-                    Yii::$app->response->statusCode = 403;
+                    $model = new ProductBasket();
+                    $model->products_id = $id;
+                    $model->basket_id = $basket->id;
+                    $model->count = 1;
+                    $model->totalPrice = $product->price;
+                    $product->quantity -= 1;
+                    $product->save();
+                }
+                if ($model->save()) {
+                    return $this->asJson([
+                        'data' => [
+                            'product_name' => $product->name,
+                            'count_product' => $model->count,
+                            'total_price_for_product' => $model->totalPrice,
+                        ],
+                        'code' => 200,
+                        'message' => 'Единица товара добавлена',
+                    ]);
+                } else {
+                    return $this->asJson([
+                        'error' => [
+                            'code' => 422,
+                            'message' => "Validation Erorr",
+                            'error' => $model->errors,
+                        ]
+                    ]);
                 }
             } else {
                 Yii::$app->response->statusCode = 403;
@@ -271,7 +321,6 @@ class ProductController extends ActiveController
                         if (!ProductBasket::findOne(['basket_id' => $basket->id])) {
                             $basket->delete();
                         }
-
 
                         $product->quantity += 1;
                         $product->save();
@@ -338,18 +387,18 @@ class ProductController extends ActiveController
     {
         $model_basket = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
         if ($model_basket) {
-            
+
             $model_productsBasket = ProductBasket::findAll(['basket_id' => $model_basket->id]);
             $orders = new Orders();
             $orders->user_id = Yii::$app->user->identity->id;
-            
+
             $sum = 0;  // можно красивее сделть
             foreach ($model_productsBasket as $value) {
                 $sum += $value->totalPrice;
             }
             if ($sum < Yii::$app->user->identity->balance) {
-                
-                
+
+
                 $orders->general_price = $sum;
                 $orders->track_code = Yii::$app->security->generateRandomString(12);
                 $orders->status_id = 1;
@@ -406,9 +455,23 @@ class ProductController extends ActiveController
                 $product = Products::findOne($model->products_id);
                 $product->quantity += $model->count;
                 $product->save();
+                
                 $model->delete();
+                
+                $basketProduct = ProductBasket::findOne(['basket_id' => $basket_model->id]);
+                if ($basketProduct) {
+                    $basket_model->totalSum -= $model->totalPrice;
+                    $basket_model->save();
+                } else {
+                    return 123;
+                    $basket_model->delete();
+                }
+
                 Yii::$app->response->statusCode = 204;
-                return;
+                return $this->asJson([
+                    'code' => 204,
+                    'message' => 'Данные удалены',
+                ]);
             } else {
                 Yii::$app->response->statusCode = 403;
             }
@@ -420,7 +483,8 @@ class ProductController extends ActiveController
     public function actionCancelOrders($id)
     {
         $model = Orders::findOne($id);
-        if (Yii::$app->user->identity->role_id == 2) {
+        $user = User::findOne(Yii::$app->user->identity->id);
+        if ($user->isAdmin()) {
             if ($model) {
                 if ($model->status_id == 1) {
                     $new_cancel = new ReasonCancellation();

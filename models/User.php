@@ -38,10 +38,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['password', 'first_name', 'last_name', 'email'], 'required'],
+            [['password', 'first_name', 'last_name', 'email'], 'required', 'on' => 'register'],
 
             ['email', 'email'],
-            ['email', 'unique'],
+            ['email', 'unique', 'on' => 'register'],
             ['password', 'match', 'pattern' => '/(?=.*[a-z])(?=.*[0-9])[0-9a-zA-Z!@#$%^&*]{6}/'],
             
         ];
@@ -81,5 +81,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function getRoleId($role)
     {
         return Role::findOne(['role', $role])->id;
+    }
+
+    public function isAdmin() {
+        return $this->role_id == 2 ? true : false;
     }
 }

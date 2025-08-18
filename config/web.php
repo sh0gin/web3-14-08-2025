@@ -88,7 +88,7 @@ $config = [
                 "OPTIONS api/register" => "option",
 
                 "POST api/login" => "user/login",
-                "OPTIONS api/register" => "option",
+                "OPTIONS api/login" => "option",
 
                 "POST api/add-product" => "product/add-product",
                 "OPTIONS api/add-product" => "option",
