@@ -99,4 +99,9 @@ class Products extends \yii\db\ActiveRecord
         return $this->hasMany(ProductBasket::class, ['id_products' => 'id']);
     }
 
+    public static function getProductName($id) {
+        
+        return self::findOne($id)->name;
+    }
+
 }

@@ -195,10 +195,20 @@ class ProductController extends ActiveController
             "query" => $query,
         ]);
 
-        $post = Yii::$app->request->post();
-        if ($post) {
-            $provider->setPagination(['pageSize' => $post['count'], 'page' => $post['page']]);
+        if (Yii::$app->request->method == 'POST') {
+            $post = Yii::$app->request->post();
+            if (array_key_exists('count', $post) && array_key_exists('page', $post)) {
+                $provider->setPagination(['pageSize' => $post['count'], 'page' => $post['page'] - 1]);
+            } else {
+                return $this->asJson([
+                    'error' => [
+                        'code' => 500,
+                        'message' => 'Не правильные параметры',
+                    ]
+                ]);
+            }
         }
+
         $result = [];
         foreach ($provider->getModels() as $value) {
 
@@ -222,6 +232,7 @@ class ProductController extends ActiveController
             'message' => 'Все продукты получены',
         ]);
     }
+    
 
     public function actionAddOneProduct($id)
     {
@@ -255,11 +266,31 @@ class ProductController extends ActiveController
                     $product->save();
                 }
                 if ($model->save()) {
+
+                    $count = 0;
+
+                    $basket_with_product = [];
+
+                    foreach (ProductBasket::findAll(['basket_id' => $basket->id]) as $value) {
+
+                        $basket_with_product[] = [
+                            'product_name' => Products::getProductName($value->products_id),
+                            'count' => $value->count,
+                            'price_for_this_product' => $value->totalPrice,
+                        ];
+                        $count += $value->count;
+                    };
+
                     return $this->asJson([
                         'data' => [
-                            'product_name' => $product->name,
-                            'count_product' => $model->count,
-                            'total_price_for_product' => $model->totalPrice,
+                            'new_product' => [
+                                'product_name' => $product->name,
+                                'count_product' => $model->count,
+                                'total_price_for_product' => $model->totalPrice,
+                            ],
+                            'basket' => $basket_with_product,
+                            'count_products' => $count,
+                            'price_for_all' => $basket->totalSum,
                         ],
                         'code' => 200,
                         'message' => 'Единица товара добавлена',
@@ -277,7 +308,7 @@ class ProductController extends ActiveController
                 Yii::$app->response->statusCode = 403;
             }
         } else {
-            Yii::$app->response->statusCode = 403;
+            Yii::$app->response->statusCode = 404;
         }
     }
 
@@ -387,7 +418,7 @@ class ProductController extends ActiveController
                         $model_productsOrders = new OrdersProducts();
                         $model_productsOrders->products_id = $value->products_id;
                         $model_productsOrders->count = $value->count;
-                        $model_productsOrders->totalPrice = $value->count;
+                        $model_productsOrders->totalPrice = $value->totalPrice;
                         $model_productsOrders->orders_id = $orders->id;
                         $model_productsOrders->save();
                     }
@@ -555,6 +586,38 @@ class ProductController extends ActiveController
                     'category' => Category::getCategoryName($model->category_id),
                     'quantity' => $model->quantity,
                     'price' => $model->price,
+                ]
+            ]);
+        } else {
+            Yii::$app->response->statusCode = 404;
+        }
+    }
+
+    public function actionGetInfoOrders($code)
+    {
+        $order = Orders::findOne(['track_code' => $code]);
+        if ($order) {
+            $user = Users::findOne($order->user_id);
+            $products = [];
+            foreach (OrdersProducts::findAll(['orders_id' => $order->id]) as $elem) {
+                $products = [
+                    'product' => Products::getProductName($elem->products_id),
+                    'count' => $elem->count,
+                    'totalPrice' => $elem->totalPrice,
+                ];
+            }
+            return $this->asJson([
+                'data' => [
+                    'order' => [
+                        'status' => StatusOrders::getStatusName($order->status_id),
+                        'data_of_creation' => $order->data_of_creation,
+                        'general_price' => $order->general_price,
+                        'products' => $products,
+                    ],
+                    'user' => [
+                        'first-name' => $user->first_name,
+                        'last-name' => $user->last_name,
+                    ],
                 ]
             ]);
         } else {

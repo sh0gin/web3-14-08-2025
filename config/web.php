@@ -90,25 +90,26 @@ $config = [
                 "POST api/login" => "user/login",
                 "OPTIONS api/login" => "options",
 
-                "POST api/add-product" => "product/add-product",
+                "POST api/products/add-product" => "product/add-product",
                 "OPTIONS api/add-product" => "options",
 
-                "POST api/add-category" => "product/add-category",
+                "POST api/category/add-category" => "product/add-category",
                 "OPTIONS api/add-category" => "options",
 
-                "POST api/get-products" => "product/get-products",
+                "GET api/products" => "product/get-products",
                 "OPTIONS api/get-products" => "options",
 
-                "POST api/add-one-product/<id>" => "product/add-one-product",
+                "POST api/products" => "product/get-products",
+                "OPTIONS api/get-products" => "options",
+                
+                "POST api/product/add-one-product/<id>" => "product/add-one-product",
                 "OPTIONS api/add-one-product/<id>" => "options",
 
-                "POST api/del-one-product/<id>" => "product/del-one-product",
+                "DELETE api/product/del-one-product/<id>" => "product/del-one-product",
                 "OPTIONS api/del-one-product/<id>" => "options",
 
-                "POST api/del-all-products/<id>" => "product/del-all-product",
+                "DELETE api/product/del-all-products/<id>" => "product/del-all-product",
                 "OPTIONS api/del-all-products/<id>" => "options",
-
-                // "POST api/sum-for-basket" => "product/                                                               
 
                 "POST api/order" => "product/order",
                 "OPTIONS api/order" => "options",
@@ -119,7 +120,7 @@ $config = [
                 "POST api/put-balance" => "product/put-balance",
                 "OPTIONS api/cancel-orders/<id>" => "options",
 
-                "GET api/get-orders" => "product/get-orders",
+                "GET api/orders/get-orders" => "product/get-orders",
                 "OPTIONS api/get-orders" => "options",
 
                 "GET api/get-user-info" => "user/get-user-info",
@@ -128,8 +129,11 @@ $config = [
                 "GET api/logout" => "user/logout",
                 "OPTIONS api/logout" => "options",
 
-                "POST api/search" => "product/search-products",
+                "POST api/product/search" => "product/search-products",
                 "OPTIONS api/search" => "options",
+
+                "GET api/orders/<code>" => "product/get-info-orders",
+                "OPTIONS api/orders/<code>" => "options",
             ],
         ],
     ],
