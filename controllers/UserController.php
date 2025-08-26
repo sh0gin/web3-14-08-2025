@@ -26,15 +26,22 @@ class UserController extends ActiveController
         $behaviors['corsFilter'] = [
             'class' => \yii\filters\Cors::class,
             'cors' => [
-                'Origin' => [isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : 'http://' . $_SERVER['REMOTE_ADDR']],
+                'Origin' => ['*'], // isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : 'http://' . $_SERVER['REMOTE_ADDR']
                 'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
                 'Access-Control-Request-Headers' => ['*'],
+                'Access-Control-Allow-Credentials' => null,
             ],
             'actions' => [
                 'logout' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
                 'get-user-info' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'register' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
+                'login' => [
                     'Access-Control-Allow-Credentials' => true,
                 ]
             ],
@@ -98,7 +105,6 @@ class UserController extends ActiveController
         $model = new Users();
         $model->load($post, '');
 
-
         if ($model->validate()) {
             $model = Users::findOne(['email' => $post['email']]);
             if ($model && $model->validatePassword($post['password'])) {
@@ -148,7 +154,8 @@ class UserController extends ActiveController
         ]);
     }
 
-    public function actionLogout() {
+    public function actionLogout()
+    {
         $model = Users::findOne(Yii::$app->user->identity->id);
         $model->token = null;
         $model->save(false);

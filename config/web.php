@@ -19,8 +19,9 @@ $config = [
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
                 'multipart/form-data' => 'yii\web\MultipartFormDataParser',
-            ]
+            ],
         ],
+        
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,
             'charset' => 'UTF-8',
@@ -101,7 +102,7 @@ $config = [
 
                 "POST api/products" => "product/get-products",
                 "OPTIONS api/get-products" => "options",
-                
+
                 "POST api/product/add-one-product/<id>" => "product/add-one-product",
                 "OPTIONS api/add-one-product/<id>" => "options",
 
