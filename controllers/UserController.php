@@ -29,7 +29,7 @@ class UserController extends ActiveController
                 'Origin' => ['*'], // isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : 'http://' . $_SERVER['REMOTE_ADDR']
                 'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
                 'Access-Control-Request-Headers' => ['*'],
-                'Access-Control-Allow-Credentials' => null,
+                // 'Access-Control-Allow-Credentials' => false,
             ],
             'actions' => [
                 'logout' => [
@@ -38,12 +38,7 @@ class UserController extends ActiveController
                 'get-user-info' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
-                'register' => [
-                    'Access-Control-Allow-Credentials' => true,
-                ],
-                'login' => [
-                    'Access-Control-Allow-Credentials' => true,
-                ]
+
             ],
         ];
 
@@ -86,7 +81,9 @@ class UserController extends ActiveController
                     'first_name' => $model->first_name,
                     'last_name' => $model->last_name,
                     'email' => $model->email,
-                ]
+                    'code' => 200,  
+                ],
+                
             ]);
         } else {
             return $this->asJson([
@@ -102,9 +99,16 @@ class UserController extends ActiveController
     public function actionLogin()
     {
         $post = Yii::$app->request->post();
-        $model = new Users();
-        $model->load($post, '');
 
+        // var_dump($post);
+        // return;
+        // $post = $post->getRawBody();
+        // return json_decode($post);
+
+
+        $model = new Users(['scenario' => 'login']);
+        $model->load($post, '');
+        // return $post;
         if ($model->validate()) {
             $model = Users::findOne(['email' => $post['email']]);
             if ($model && $model->validatePassword($post['password'])) {
@@ -126,6 +130,8 @@ class UserController extends ActiveController
                 Yii::$app->response->statusCode = 401;
             }
         } else {
+            Yii::$app->response->statusCode = 422;
+
             return $this->asJson([
                 'error' => [
                     'code' => 422,

@@ -14,14 +14,14 @@ $config = [
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'asdfasdf',
+            'cookieValidationKey' => 'asdfasdFGRGRFf',
             'baseUrl' => '',
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
                 'multipart/form-data' => 'yii\web\MultipartFormDataParser',
             ],
         ],
-        
+
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,
             'charset' => 'UTF-8',
@@ -47,7 +47,7 @@ $config = [
             'formatters' => [
                 \yii\web\Response::FORMAT_JSON => [
                     'class' => 'yii\web\JsonResponseFormatter',
-                    'prettyPrint' => YII_DEBUG, // use "pretty" output in debug mode
+                    'prettyPrint' => YII_DEBUG, //  
                     'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
                     // ...
                 ],
@@ -84,33 +84,42 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'users',
+                    // 'pluralize' => true,
+                    // 'prefix' => 'api',
+                    // 'extraPatterns' => [
+                    //     "POST login" => "login",
+                    //     "OPTIONS login" => "options",
+                    // ]
+                ],
                 "POST api/register" => "user/register",
-                "OPTIONS api/register" => "options",
+                "OPTIONS api/register" => "user/options",
 
                 "POST api/login" => "user/login",
-                "OPTIONS api/login" => "options",
+                "OPTIONS api/login" => "user/options",
 
                 "POST api/products/add-product" => "product/add-product",
-                "OPTIONS api/add-product" => "options",
+                "OPTIONS api/products/add-product" => "options",
 
                 "POST api/category/add-category" => "product/add-category",
-                "OPTIONS api/add-category" => "options",
+                "OPTIONS api/category/add-category" => "options",
 
                 "GET api/products" => "product/get-products",
-                "OPTIONS api/get-products" => "options",
+                "OPTIONS api/products" => "options",
 
                 "POST api/products" => "product/get-products",
-                "OPTIONS api/get-products" => "options",
+                "OPTIONS api/products" => "options",
 
                 "POST api/product/add-one-product/<id>" => "product/add-one-product",
-                "OPTIONS api/add-one-product/<id>" => "options",
+                "OPTIONS api/product/add-one-product/<id>" => "options",
 
                 "DELETE api/product/del-one-product/<id>" => "product/del-one-product",
-                "OPTIONS api/del-one-product/<id>" => "options",
+                "OPTIONS api/product/del-one-product/<id>" => "options",
 
                 "DELETE api/product/del-all-products/<id>" => "product/del-all-product",
-                "OPTIONS api/del-all-products/<id>" => "options",
+                "OPTIONS api/product/del-all-products/<id>" => "options",
 
                 "POST api/order" => "product/order",
                 "OPTIONS api/order" => "options",
@@ -119,10 +128,10 @@ $config = [
                 "OPTIONS api/cancel-orders/<id>" => "options",
 
                 "POST api/put-balance" => "product/put-balance",
-                "OPTIONS api/cancel-orders/<id>" => "options",
+                "OPTIONS api/put-balance" => "options",
 
                 "GET api/orders/get-orders" => "product/get-orders",
-                "OPTIONS api/get-orders" => "options",
+                "OPTIONS api/orders/get-orders" => "options",
 
                 "GET api/get-user-info" => "user/get-user-info",
                 "OPTIONS api/get-user-info" => "options",
@@ -131,7 +140,7 @@ $config = [
                 "OPTIONS api/logout" => "options",
 
                 "POST api/product/search" => "product/search-products",
-                "OPTIONS api/search" => "options",
+                "OPTIONS api/product/search" => "options",
 
                 "GET api/orders/<code>" => "product/get-info-orders",
                 "OPTIONS api/orders/<code>" => "options",
