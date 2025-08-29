@@ -86,6 +86,7 @@ class UserController extends ActiveController
                 
             ]);
         } else {
+            Yii::$app->response->statusCode = 422;
             return $this->asJson([
                 'error' => [
                     'code' => 422,
@@ -162,6 +163,7 @@ class UserController extends ActiveController
 
     public function actionLogout()
     {
+
         $model = Users::findOne(Yii::$app->user->identity->id);
         $model->token = null;
         $model->save(false);

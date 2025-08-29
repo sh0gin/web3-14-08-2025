@@ -110,7 +110,7 @@ $config = [
                 "OPTIONS api/products" => "options",
 
                 "POST api/products" => "product/get-products",
-                "OPTIONS api/products" => "options",
+                "OPTIONS api/products" => "product/options",
 
                 "POST api/product/add-one-product/<id>" => "product/add-one-product",
                 "OPTIONS api/product/add-one-product/<id>" => "options",
@@ -137,7 +137,7 @@ $config = [
                 "OPTIONS api/get-user-info" => "options",
 
                 "GET api/logout" => "user/logout",
-                "OPTIONS api/logout" => "options",
+                "OPTIONS api/logout" => "user/options",
 
                 "POST api/product/search" => "product/search-products",
                 "OPTIONS api/product/search" => "options",
