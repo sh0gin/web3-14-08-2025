@@ -120,13 +120,13 @@ class ProductController extends ActiveController
                 foreach ($model->files as $value) {
 
                     $model_files = new ImagesProducts();
-                    $file = "imageForProduct" . Yii::$app->security->generateRandomString(6) . "-{$value->name}";
-                    $file_path = __DIR__ . "/../$file";
+                    $file = Yii::$app->security->generateRandomString(6) . "---{$value->name}";
+                    $file_path = __DIR__ . "/../web/ImagesForProducts/$file";
                     $value->saveAs($file_path);
                     $model_files->image = $file;
                     $model_files->product_id = $model->id;
                     $model_files->save(false);
-                    $files[] = Yii::$app->request->getHostInfo() . '/imageForProduct/' . $file;
+                    $files[] = Yii::$app->request->getHostInfo() . '/web/imagesForProducts/' . $file;
                 }
 
 
@@ -217,12 +217,11 @@ class ProductController extends ActiveController
                 ->select([
                     "CONCAT('"
                         . Yii::$app->request->getHostInfo()
-                        . "/imageForProduct/', image) as file_url"
+                        . "/web/imagesForProducts/', image) as file_url"
                 ])
                 ->where(['product_id' => $value['id']])->asArray()->ALL());
             $result[] = $value;
         }
-        return $result;
 
         return $this->asJson([
             'data' => [
