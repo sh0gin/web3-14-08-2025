@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: MySQL-8.0
--- Время создания: Авг 18 2025 г., 18:04
+-- Время создания: Авг 30 2025 г., 12:54
 -- Версия сервера: 8.0.41
 -- Версия PHP: 8.2.26
 
@@ -51,7 +51,9 @@ CREATE TABLE `Category` (
 INSERT INTO `Category` (`id`, `name`) VALUES
 (1, 'toys'),
 (2, 'fructs'),
-(3, 'toy');
+(3, 'cars'),
+(4, 'Vegetabless'),
+(5, 'KeyBoards');
 
 -- --------------------------------------------------------
 
@@ -70,18 +72,16 @@ CREATE TABLE `ImagesProducts` (
 --
 
 INSERT INTO `ImagesProducts` (`id`, `product_id`, `image`) VALUES
-(22, 19, 'imageForProduct9ZMPXh-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(23, 19, 'imageForProduct9-gG8S--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
-(24, 19, 'imageForProductENLlp9-sample-city-park-400x300.jpg'),
-(25, 20, 'imageForProducti9-JIA-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(26, 20, 'imageForProductDNTAR6--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
-(27, 20, 'imageForProduct6FCK2m-sample-city-park-400x300.jpg'),
-(28, 21, 'imageForProductM-Ggon-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(29, 21, 'imageForProductHz6Nip--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
-(30, 21, 'imageForProductYPHbBP-sample-city-park-400x300.jpg'),
-(31, 22, 'imageForProductZavTPb-312c10f6e2f6cfee7afd836555965079.jpeg'),
-(32, 22, 'imageForProduct4vXcln--ESntrplLKwfqhROk58MUTAqyFxib9z-haqPK-4JWtBT_5ABv7zGqktFjc6ccKkeI97HajB5.jpg'),
-(33, 22, 'imageForProducthEaYku-sample-city-park-400x300.jpg');
+(38, 29, '57rPNN---jo-sonn-zeFy-oCUhV8-unsplash.jpg'),
+(39, 30, 'nfsUKx---marek-pospisil-oUBjd22gF6w-unsplash.jpg'),
+(40, 31, '6LuxTt---jerry-wang-qBrF1yu5Wys-unsplash.jpg'),
+(41, 32, '7dLhmV---immo-wegmann-S-de8PboZmI-unsplash.jpg'),
+(42, 33, 'OrfjyY---harshal-s-hirve-2GiRcLP_jkI-unsplash(1).jpg'),
+(43, 34, 'C5laiY---harshal-s-hirve-yNB8niq1qCk-unsplash.jpg'),
+(44, 35, 'EfsS-J---olena-bohovyk-cHlK4sZXOQo-unsplash.jpg'),
+(45, 36, 'jvGZsn---alexandru-acea-A3FohRFYW2A-unsplash.jpg'),
+(46, 37, 'XdYr-l---fernando-andrade-nAOZCYcLND8-unsplash.jpg'),
+(47, 38, 'YEehkr---olga-kovalski-ntoRj19bLOU-unsplash.jpg');
 
 -- --------------------------------------------------------
 
@@ -123,13 +123,6 @@ CREATE TABLE `OrdersProducts` (
   `totalPrice` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Дамп данных таблицы `OrdersProducts`
---
-
-INSERT INTO `OrdersProducts` (`id`, `products_id`, `orders_id`, `count`, `totalPrice`) VALUES
-(18, 21, 20, 4, 4);
-
 -- --------------------------------------------------------
 
 --
@@ -163,10 +156,16 @@ CREATE TABLE `Products` (
 --
 
 INSERT INTO `Products` (`id`, `name`, `category_id`, `quantity`, `price`) VALUES
-(19, 'joy__2', 2, 2351, 44),
-(20, 'joy__3', 2, 2356, 44),
-(21, 'joy__4', 2, 2356, 44),
-(22, 'joy__56', 2, 2356, 44);
+(29, 'Basket Fruits', 2, 4000, 3500),
+(30, 'Yellow Car', 3, 130, 6000000),
+(31, 'Toy Train', 1, 1300, 1750),
+(32, 'Tomatos', 4, 1200, 200),
+(33, 'Cucumber', 4, 5000, 150),
+(34, 'Carrots', 4, 6500, 478),
+(35, 'KeyBoard White Pro', 5, 8888, 7800),
+(36, 'KeyBoard Pink Baseun', 5, 348, 9600),
+(37, 'Pineapple - 2kg', 2, 3400, 120),
+(38, 'Assorti fruits', 2, 3400, 2600);
 
 -- --------------------------------------------------------
 
@@ -255,7 +254,8 @@ INSERT INTO `Users` (`id`, `first_name`, `last_name`, `email`, `password`, `bala
 (5, 'ff', 'f', 'email2@mail.ru', '$2y$13$HGAPIgEm0tOlSUzLS.A1cuX1t9Z84pZkG0kkYAh00xwZrqOjx6Yoe', 0, 'yO44JVdDkff4GTIEizeY0vqZu9rMmuZZ', 1),
 (6, 'Egr', 'Frkv', 'email3@mail.ru', '$2y$13$UzH2kNcUM/tgpMmJ.zelfeTE5QDyXnI8DOM/m..HTGjVklV.GQMYa', 0, NULL, 1),
 (7, 'Egr', 'Frkv', 'email6@mail.ru', '$2y$13$.Qpg2gqUoSUfVgBTMcr5..a/qm6NM0McQOWOeTHvNVvFugw9fyrgy', 0, NULL, 1),
-(8, 'Egr', 'Frkv', 'admin@mail.ru', '$2y$13$XxmrFFZdE.LElXsHlc9myOhiKvqC1ry2rMbRH3yf5xeVYt0ZM4zcy', 148, 'h0dOFyR7j736qLSJTg-vTnfXioBOwFNl', 2);
+(8, 'Egr', 'Frkv', 'admin@mail.ru', '$2y$13$XxmrFFZdE.LElXsHlc9myOhiKvqC1ry2rMbRH3yf5xeVYt0ZM4zcy', 148, NULL, 2),
+(9, 'Egro', 'Frolov', 'mail13@mail.ru', '$2y$13$Kir5jNPeFzkovfuopw.aLuzSmSfZEENNIRfg8IEzCaSqeInKn5vNO', 0, 'McQeStef-Lr3l3qUgDnYRq7MbAE444Hc', 1);
 
 --
 -- Индексы сохранённых таблиц
@@ -352,13 +352,13 @@ ALTER TABLE `Baskets`
 -- AUTO_INCREMENT для таблицы `Category`
 --
 ALTER TABLE `Category`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `ImagesProducts`
 --
 ALTER TABLE `ImagesProducts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT для таблицы `Orders`
@@ -382,7 +382,7 @@ ALTER TABLE `ProductBasket`
 -- AUTO_INCREMENT для таблицы `Products`
 --
 ALTER TABLE `Products`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT для таблицы `Reason_cancellation`
@@ -406,7 +406,7 @@ ALTER TABLE `Status_orders`
 -- AUTO_INCREMENT для таблицы `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
