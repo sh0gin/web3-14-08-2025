@@ -94,47 +94,50 @@ $config = [
                     //     "OPTIONS login" => "options",
                     // ]
                 ],
+                "GET api/balance" => "user/get-balance",
+                "OPTIONS api/balance" => "user/options",
+
                 "POST api/register" => "user/register",
                 "OPTIONS api/register" => "user/options",
 
                 "POST api/login" => "user/login",
                 "OPTIONS api/login" => "user/options",
-
+                
                 "POST api/products/add-product" => "product/add-product",
-                "OPTIONS api/products/add-product" => "options",
+                "OPTIONS api/products/add-product" => "product/options",
 
                 "POST api/category/add-category" => "product/add-category",
-                "OPTIONS api/category/add-category" => "options",
+                "OPTIONS api/category/add-category" => "product/options",
 
                 "GET api/products" => "product/get-products",
-                "OPTIONS api/products" => "options",
+                "OPTIONS api/products" => "product/options",
 
                 "POST api/products" => "product/get-products",
                 "OPTIONS api/products" => "product/options",
 
                 "POST api/product/add-one-product/<id>" => "product/add-one-product",
-                "OPTIONS api/product/add-one-product/<id>" => "options",
+                "OPTIONS api/product/add-one-product/<id>" => "product/options",
 
                 "DELETE api/product/del-one-product/<id>" => "product/del-one-product",
-                "OPTIONS api/product/del-one-product/<id>" => "options",
+                "OPTIONS api/product/del-one-product/<id>" => "product/options",
 
                 "DELETE api/product/del-all-products/<id>" => "product/del-all-product",
-                "OPTIONS api/product/del-all-products/<id>" => "options",
+                "OPTIONS api/product/del-all-products/<id>" => "product/options",
 
                 "POST api/order" => "product/order",
-                "OPTIONS api/order" => "options",
+                "OPTIONS api/order" => "product/options",
 
                 "POST api/cancel-orders/<id>" => "product/cancel-orders",
-                "OPTIONS api/cancel-orders/<id>" => "options",
+                "OPTIONS api/cancel-orders/<id>" => "product/options",
 
                 "POST api/put-balance" => "product/put-balance",
-                "OPTIONS api/put-balance" => "options",
+                "OPTIONS api/put-balance" => "product/options",
 
                 "GET api/orders/get-orders" => "product/get-orders",
-                "OPTIONS api/orders/get-orders" => "options",
+                "OPTIONS api/orders/get-orders" => "product/options",
 
                 "GET api/get-user-info" => "user/get-user-info",
-                "OPTIONS api/get-user-info" => "options",
+                "OPTIONS api/get-user-info" => "user/options",
 
                 "GET api/logout" => "user/logout",
                 "OPTIONS api/logout" => "user/options",
@@ -144,6 +147,9 @@ $config = [
 
                 "GET api/orders/<code>" => "product/get-info-orders",
                 "OPTIONS api/orders/<code>" => "options",
+
+                "GET api/basket" => "product/get-basket",
+                "OPTIONS api/basket" => "product/options"
             ],
         ],
     ],

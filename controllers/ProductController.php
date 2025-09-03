@@ -83,7 +83,7 @@ class ProductController extends ActiveController
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders', 'put-balance'],
+            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders', 'put-balance', 'get-basket'],
         ];
 
         // re-add authentication filter
@@ -106,6 +106,8 @@ class ProductController extends ActiveController
 
         return $actions;
     }
+
+
 
     public function actionAddProduct()
     {
@@ -232,7 +234,53 @@ class ProductController extends ActiveController
             'message' => 'Все продукты получены',
         ]);
     }
-    
+
+    public function actionGetBasket()
+    {
+        $model_basket = Baskets::findOne(['user_id' => Yii::$app->user->identity->id]);
+        if ($model_basket) {
+            $basket_with_product = [];
+            $totalProductCount = 0;
+            foreach (ProductBasket::findAll(['basket_id' => $model_basket->id]) as $value) {
+
+                $basket_with_product[] = [
+                    'id' => $value->products_id,
+                    'product_name' => Products::getProductName($value->products_id),
+                    'count' => $value->count,
+                    'price_for_this_product' => $value->totalPrice,
+                    'price_for_once' => $value->totalPrice / $value->count,
+                ];
+                $totalProductCount += $value->count;
+            }
+
+            foreach ($basket_with_product as &$value) {
+
+                $value['file_url'] = array_map(fn($value) => $value['file_url'], ImagesProducts::find()
+                    ->select([
+                        "CONCAT('"
+                            . Yii::$app->request->getHostInfo()
+                            . "/web/imagesForProducts/', image) as file_url"
+                    ])
+                    ->where(['product_id' => $value['id']])->asArray()->all());
+            }
+
+            return $this->asJson([
+                'data' => [
+                    'basket' => $basket_with_product,
+                    'totalCount' => $totalProductCount,
+                    'totalSum' => $model_basket->totalSum,
+                ]
+            ]);
+        } else {
+            return $this->asJson([
+                'data' => [
+                    'basket' => [],
+                    'totalCount' => 0,
+                    'totalSum' => 0,
+                ]
+            ]);
+        }
+    }
 
     public function actionAddOneProduct($id)
     {

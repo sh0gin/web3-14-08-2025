@@ -38,14 +38,16 @@ class UserController extends ActiveController
                 'get-user-info' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
-
+                'get-balance' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ]
             ],
         ];
 
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['logout', 'get-user-info'],
+            'only' => ['logout', 'get-user-info', 'get-balance'],
         ];
 
         // re-add authentication filter
@@ -81,9 +83,9 @@ class UserController extends ActiveController
                     'first_name' => $model->first_name,
                     'last_name' => $model->last_name,
                     'email' => $model->email,
-                    'code' => 200,  
+                    'code' => 200,
                 ],
-                
+
             ]);
         } else {
             Yii::$app->response->statusCode = 422;
@@ -157,6 +159,16 @@ class UserController extends ActiveController
                     'balance' => $model->balance,
                     'role' => Role::getRoleName($model->role_id),
                 ]
+            ]
+        ]);
+    }
+
+    public function actionGetBalance()
+    {
+        $user = Users::findOne(Yii::$app->user->identity->id);
+        return $this->asJson([
+            'data' => [
+                'balance' => $user->balance,
             ]
         ]);
     }
