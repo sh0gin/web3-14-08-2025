@@ -588,15 +588,34 @@ class ProductController extends ActiveController
     {
         $result = [];
         foreach (Orders::findAll(['user_id' => Yii::$app->user->identity->id]) as $value) {
+            $products = [];
+            foreach (OrdersProducts::findAll(['orders_id' => $value->id]) as $elem) {
+                $image = ImagesProducts::findAll(['product_id' => $elem->products_id]);
+                $result_image = [];
+                if ($image) {
+                    foreach ($image as $one_image) {
+                        $result_image[] = Yii::$app->request->getHostInfo() . "/web/imagesForProducts/" . $one_image->image;
+                    }
+                }
+                $products[] = [
+                    'product' => Products::getProductName($elem->products_id),
+                    'count' => $elem->count,
+                    'totalPrice' => $elem->totalPrice,
+                    'image' => $result_image,
+                ];
+            }
             $result[] = [
                 'id' => $value->id,
                 'data_of_creation' => $value->data_of_creation,
                 'general_price' => $value->general_price,
+                'products' => $products,
                 'track_code' => $value->track_code,
                 'status' => StatusOrders::getStatusName($value->status_id),
             ];
             if ($value->status_id == 3) {
                 $result[array_key_last($result)]['message'] = ReasonCancellation::findOne(['order_id' => $value->id])->text;
+            } else {
+                $result[array_key_last($result)]['message'] = '';
             }
         }
         return $this->asJson([
