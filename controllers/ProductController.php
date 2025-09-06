@@ -214,7 +214,6 @@ class ProductController extends ActiveController
 
         $result = [];
         foreach ($provider->getModels() as $value) {
-
             $value['file_url'] = array_map(fn($value) => $value['file_url'], ImagesProducts::find()
                 ->select([
                     "CONCAT('"
@@ -491,6 +490,7 @@ class ProductController extends ActiveController
                     Yii::$app->response->statusCode = 403;
                 }
             } else {
+                Yii::$app->response->statusCode = 402;
                 return $this->asJson([
                     'error' => [
                         'message' => 'Недостаточно средств',
@@ -587,7 +587,32 @@ class ProductController extends ActiveController
     public function actionGetOrders()
     {
         $result = [];
-        foreach (Orders::findAll(['user_id' => Yii::$app->user->identity->id]) as $value) {
+        $status = [
+            'total' => 0,
+            'approved' => 0,
+            'denied' => 0,
+        ];
+        $request = Orders::find()->where(['user_id' => Yii::$app->user->identity->id]);
+
+        foreach ($request->all() as $item) {
+            if (StatusOrders::getStatusName($item->status_id) === "Заказ в обработке") {
+                $status['total'] += 1;
+            } else if (StatusOrders::getStatusName($item->status_id) === "Готов к получению") {
+                $status['total'] += 1;
+                $status['approved'] += 1;
+            } else if (StatusOrders::getStatusName($item->status_id) === "Отменён") { 
+                $status['total'] += 1;
+                $status['denies'] += 1;
+            } else {
+                Yii::$app->response->statusCode = 500;
+            }
+        }
+
+        if (Yii::$app->request->post()['status_id'] != 4) {
+            $request = $request->where(['status_id' => Yii::$app->request->post()]['status_id']);
+        }
+        foreach ($request->all() as $value) {
+            
             $products = [];
             foreach (OrdersProducts::findAll(['orders_id' => $value->id]) as $elem) {
                 $image = ImagesProducts::findAll(['product_id' => $elem->products_id]);
@@ -604,23 +629,27 @@ class ProductController extends ActiveController
                     'image' => $result_image,
                 ];
             }
+
             $result[] = [
                 'id' => $value->id,
                 'data_of_creation' => $value->data_of_creation,
                 'general_price' => $value->general_price,
                 'products' => $products,
                 'track_code' => $value->track_code,
-                'status' => StatusOrders::getStatusName($value->status_id),
+                'status' => StatusOrders::getStatusName($value->status_id)
             ];
+            
             if ($value->status_id == 3) {
                 $result[array_key_last($result)]['message'] = ReasonCancellation::findOne(['order_id' => $value->id])->text;
             } else {
                 $result[array_key_last($result)]['message'] = '';
             }
         }
+
         return $this->asJson([
             'data' => $result,
             'user' => Yii::$app->user->identity->email,
+            'totalStatus' => $status,
         ]);
     }
 

@@ -133,7 +133,7 @@ $config = [
                 "POST api/put-balance" => "product/put-balance",
                 "OPTIONS api/put-balance" => "product/options",
 
-                "GET api/orders/get-orders" => "product/get-orders",
+                "POST api/orders/get-orders" => "product/get-orders",
                 "OPTIONS api/orders/get-orders" => "product/options",
 
                 "GET api/get-user-info" => "user/get-user-info",
