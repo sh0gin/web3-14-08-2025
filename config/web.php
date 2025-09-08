@@ -149,7 +149,13 @@ $config = [
                 "OPTIONS api/orders/<code>" => "options",
 
                 "GET api/basket" => "product/get-basket",
-                "OPTIONS api/basket" => "product/options"
+                "OPTIONS api/basket" => "product/options",
+
+                "GET api/user/admin" => "user/is-admin",
+                "OPTIONS api/user/admin" => "user/options",
+
+                "GET api/order/get-all-order/<status>" => 'product/get-all-order',
+                "OPTIONS api/order/get-all-order/<status>" => 'product/options',
             ],
         ],
     ],

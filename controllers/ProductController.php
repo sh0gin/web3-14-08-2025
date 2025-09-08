@@ -77,13 +77,16 @@ class ProductController extends ActiveController
                 'del-one-product' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
+                'get-all-order' => [
+                    'Access-Control-Allow-Credentials' => true,
+                ],
             ],
         ];
 
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders', 'put-balance', 'get-basket'],
+            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders', 'put-balance', 'get-basket', 'get-all-order'],
         ];
 
         // re-add authentication filter
@@ -651,6 +654,28 @@ class ProductController extends ActiveController
             'user' => Yii::$app->user->identity->email,
             'totalStatus' => $status,
         ]);
+    }
+
+    public function actionGetAllOrder($status) {
+
+        $user = Users::findOne(Yii::$app->user->identity->id);
+        if ($user->isAdmin()) {
+            $orders = Orders::find();
+
+            if ($status == 0) {
+                $orders = $orders->all();
+                return $orders;
+            } else if ($status == 1) {
+                $orsers = $orders->where(['status_id' => 1]);
+            } else {
+                $orsers = $orders->where(['status_id' => [2, 3]]);
+            }
+            return $orders->all();
+
+            return $orders;
+        } else {
+            Yii::$app->response->statusCode = 403;
+        }
     }
 
     public function actionPutBalance()

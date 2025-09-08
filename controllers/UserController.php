@@ -40,6 +40,9 @@ class UserController extends ActiveController
                 ],
                 'get-balance' => [
                     'Access-Control-Allow-Credentials' => true,
+                ],
+                'is-admin' => [
+                    'Access-Control-Allow-Credentials' => true,
                 ]
             ],
         ];
@@ -47,7 +50,7 @@ class UserController extends ActiveController
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['logout', 'get-user-info', 'get-balance'],
+            'only' => ['logout', 'get-user-info', 'get-balance', 'is-admin'],
         ];
 
         // re-add authentication filter
@@ -97,6 +100,11 @@ class UserController extends ActiveController
                 ]
             ]);
         }
+    }
+
+    public function actionIsAdmin() {
+        $user = Users::findOne(Yii::$app->user->identity->id);
+        return $user->isAdmin();
     }
 
     public function actionLogin()
