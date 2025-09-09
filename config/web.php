@@ -143,10 +143,10 @@ $config = [
                 "OPTIONS api/logout" => "user/options",
 
                 "POST api/product/search" => "product/search-products",
-                "OPTIONS api/product/search" => "options",
+                "OPTIONS api/product/search" => "product/options",
 
                 "GET api/orders/<code>" => "product/get-info-orders",
-                "OPTIONS api/orders/<code>" => "options",
+                "OPTIONS api/orders/<code>" => "product/options",
 
                 "GET api/basket" => "product/get-basket",
                 "OPTIONS api/basket" => "product/options",

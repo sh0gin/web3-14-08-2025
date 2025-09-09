@@ -52,10 +52,7 @@ class Role extends ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUsers()
-    {
-        return $this->hasMany(User::class, ['role_id' => 'id']);
-    }
+
 
     public static function getRoleName($id) {
         return Role::findOne($id)->role;

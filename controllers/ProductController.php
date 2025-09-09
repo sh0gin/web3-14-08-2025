@@ -603,7 +603,7 @@ class ProductController extends ActiveController
             } else if (StatusOrders::getStatusName($item->status_id) === "Готов к получению") {
                 $status['total'] += 1;
                 $status['approved'] += 1;
-            } else if (StatusOrders::getStatusName($item->status_id) === "Отменён") { 
+            } else if (StatusOrders::getStatusName($item->status_id) === "Отменён") {
                 $status['total'] += 1;
                 $status['denies'] += 1;
             } else {
@@ -615,7 +615,7 @@ class ProductController extends ActiveController
             $request = $request->where(['status_id' => Yii::$app->request->post()]['status_id']);
         }
         foreach ($request->all() as $value) {
-            
+
             $products = [];
             foreach (OrdersProducts::findAll(['orders_id' => $value->id]) as $elem) {
                 $image = ImagesProducts::findAll(['product_id' => $elem->products_id]);
@@ -641,7 +641,7 @@ class ProductController extends ActiveController
                 'track_code' => $value->track_code,
                 'status' => StatusOrders::getStatusName($value->status_id)
             ];
-            
+
             if ($value->status_id == 3) {
                 $result[array_key_last($result)]['message'] = ReasonCancellation::findOne(['order_id' => $value->id])->text;
             } else {
@@ -656,23 +656,76 @@ class ProductController extends ActiveController
         ]);
     }
 
-    public function actionGetAllOrder($status) {
-
+    public function actionGetAllOrder($status)
+    {
         $user = Users::findOne(Yii::$app->user->identity->id);
         if ($user->isAdmin()) {
-            $orders = Orders::find();
+            $request = Orders::find();
+            
+            $stat = [
+                'total' => 0,
+                'handled' => 0,
+                'non_handled' => 0,
+            ];
+            
+            foreach ($request->all() as $item) {
+                if (StatusOrders::getStatusName($item->status_id) === "Заказ в обработке") {
+                    $stat['total'] += 1;
+                    $stat['non_handled'] += 1;
+                } else  {
+                    $stat['total'] += 1;
+                    $stat['handled'] += 1;
+                }
+            }
 
             if ($status == 0) {
-                $orders = $orders->all();
-                return $orders;
+                $request = $request;
             } else if ($status == 1) {
-                $orsers = $orders->where(['status_id' => 1]);
+                $request = $request->where(['status_id' => 1]);
             } else {
-                $orsers = $orders->where(['status_id' => [2, 3]]);
+                $request = $request->where(['status_id' => [2, 3]]);
             }
-            return $orders->all();
 
-            return $orders;
+
+            foreach ($request->all() as $value) {
+                
+                $products = [];
+                foreach (OrdersProducts::findAll(['orders_id' => $value->id]) as $elem) {
+                    $image = ImagesProducts::findAll(['product_id' => $elem->products_id]);
+                    $result_image = [];
+                    if ($image) {
+                        foreach ($image as $one_image) {
+                            $result_image[] = Yii::$app->request->getHostInfo() . "/web/imagesForProducts/" . $one_image->image;
+                        }
+                    }
+                    $products[] = [
+                        'product' => Products::getProductName($elem->products_id),
+                        'count' => $elem->count,
+                        'totalPrice' => $elem->totalPrice,
+                        'image' => $result_image,
+                    ];
+                }
+
+                $result[] = [
+                    'id' => $value->id,
+                    'data_of_creation' => $value->data_of_creation,
+                    'general_price' => $value->general_price,
+                    'products' => $products,
+                    'track_code' => $value->track_code,
+                    'status' => StatusOrders::getStatusName($value->status_id)
+                ];
+
+                if ($value->status_id == 3) {
+                    $result[array_key_last($result)]['message'] = ReasonCancellation::findOne(['order_id' => $value->id])->text;
+                } else {
+                    $result[array_key_last($result)]['message'] = '';
+                }
+            }
+
+            return $this->asJson([
+                'data' => $result,
+                'status' => $stat,
+            ]);
         } else {
             Yii::$app->response->statusCode = 403;
         }
