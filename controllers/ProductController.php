@@ -62,7 +62,7 @@ class ProductController extends ActiveController
                 'get-orders' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
-                'cancel-orders' => [
+                'change-status' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
                 'del-all-product' => [
@@ -86,7 +86,7 @@ class ProductController extends ActiveController
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'cancel-orders', 'get-orders', 'put-balance', 'get-basket', 'get-all-order'],
+            'only' => ['add-category', 'add-product', 'create-basket', 'add-one-product', 'del-one-product', 'sum-for-basket', 'order', 'del-all-product', 'change-status', 'get-orders', 'put-balance', 'get-basket', 'get-all-order'],
         ];
 
         // re-add authentication filter
@@ -539,16 +539,27 @@ class ProductController extends ActiveController
         }
     }
 
-    public function actionCancelOrders($id)
+    public function actionChangeStatus($id)
     {
-        $model = Orders::findOne($id);
+
+        // 1 - Order handled
+        // 2 - Order  approved
+        // 3 - Order calceling
+        $post = Yii::$app->request->post();
         $user = Users::findOne(Yii::$app->user->identity->id);
         if ($user->isAdmin()) {
+            $model = Orders::findOne($id);
             if ($model) {
-                if ($model->status_id == 1) {
-                    $new_cancel = new ReasonCancellation();
+
+                if ($post['action'] == "cancelled") {
+
+                    $new_cancel = ReasonCancellation::findOne(['order_id' => $id]);
+                    if (!$new_cancel) {
+                        $new_cancel = new ReasonCancellation();
+                    }
+
                     $new_cancel->order_id = $id;
-                    $new_cancel->load(Yii::$app->request->post(), '');
+                    $new_cancel->load($post, '');
                     if ($new_cancel->save()) {
                         $model->status_id = 3;
                         $model->save(false);
@@ -568,6 +579,7 @@ class ProductController extends ActiveController
                             'message' => 'Заказ отменен',
                         ]);
                     } else {
+                        Yii::$app->response->statusCode = 422;
                         return $this->asJson([
                             'error' => [
                                 'code' => 422,
@@ -576,8 +588,28 @@ class ProductController extends ActiveController
                             ]
                         ]);
                     }
-                } else {
-                    Yii::$app->response->statusCode = 403;
+                } else if ($post['action'] == "ready") {
+                    $new_cancel = ReasonCancellation::findOne(['order_id' => $id]);
+                    if ($new_cancel) {
+                        $new_cancel->delete();
+                    }
+                    $model->status_id = 2;
+                    $model->save(false);
+                    return $this->asJson([
+                        'code' => 201,
+                        'message' => "Заказу присвоен статус: 'Одобрен'", 
+                    ]);
+                } else if ($post['action'] == 1) {
+                    $new_cancel = ReasonCancellation::findOne(['order_id' => $id]);
+                    if ($new_cancel) {
+                        $new_cancel->delete();
+                    }
+                    $model->status_id = "processing";
+                    $model->save(false);
+                    return $this->asJson([
+                        'code' => 201,
+                        'message' => "Заказу присвоен статус: 'В обработке'", 
+                    ]);
                 }
             } else {
                 Yii::$app->response->statusCode = 404;
@@ -661,18 +693,18 @@ class ProductController extends ActiveController
         $user = Users::findOne(Yii::$app->user->identity->id);
         if ($user->isAdmin()) {
             $request = Orders::find();
-            
+
             $stat = [
                 'total' => 0,
                 'handled' => 0,
                 'non_handled' => 0,
             ];
-            
+
             foreach ($request->all() as $item) {
                 if (StatusOrders::getStatusName($item->status_id) === "Заказ в обработке") {
                     $stat['total'] += 1;
                     $stat['non_handled'] += 1;
-                } else  {
+                } else {
                     $stat['total'] += 1;
                     $stat['handled'] += 1;
                 }
@@ -688,7 +720,7 @@ class ProductController extends ActiveController
 
 
             foreach ($request->all() as $value) {
-                
+
                 $products = [];
                 foreach (OrdersProducts::findAll(['orders_id' => $value->id]) as $elem) {
                     $image = ImagesProducts::findAll(['product_id' => $elem->products_id]);

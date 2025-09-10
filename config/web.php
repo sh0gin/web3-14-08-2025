@@ -127,8 +127,8 @@ $config = [
                 "POST api/order" => "product/order",
                 "OPTIONS api/order" => "product/options",
 
-                "POST api/cancel-orders/<id>" => "product/cancel-orders",
-                "OPTIONS api/cancel-orders/<id>" => "product/options",
+                "POST api/change-status/<id>" => "product/change-status",
+                "OPTIONS api/change-status/<id>" => "product/options",
 
                 "POST api/put-balance" => "product/put-balance",
                 "OPTIONS api/put-balance" => "product/options",
